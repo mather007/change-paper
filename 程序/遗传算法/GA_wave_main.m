@@ -40,7 +40,7 @@ pmutation=0.05; %±‰“Ï∏≈¬ 
 
 for i = 1:1
     [best_thr,best_fit,new_sig]=GA_wave(s,x,level_num,db,maxgen,popsize,pcross,pmutation);
-    save(['data_wave_i=',num2str(i),'.mat'],'best_thr','best_fit','new_sig')
+    save(['D:\workspace\result\data_wave_i=',num2str(i),'.mat'],'best_thr','best_fit','new_sig')
 end
  wavwrite(new_sig,FS,'D:\workspace\result\hello6_new_0629_test1.wav');
 save('D:\workspace\result\hello6_denoise_new_0629_test1.mat','new_sig');
