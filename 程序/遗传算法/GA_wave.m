@@ -89,21 +89,21 @@ for i=1:maxgen
 %   ave_popfit=mean(popfit);
 % max_popfit=max(popfit);
 if(abs(ave_popfit-max_popfit)<1)
-    abs(ave_popfit-max_popfit);
+    break;
 else
-   [s ind]=sort(popfit);
+   [order_popfit order_num]=sort(popfit);
    chaos_num = floor(0.9*popsize);
-   for(i=0;i<chaos_num;i++)
-       for(j=0;j<level_num;j++)
-           p=real_yuzhi(ind(i),j);
+   for t=1:chaos_num
+       for j=1:level_num
+           p=real_yuzhi(order_num(i),j);
            max = c_max_min(j,1);
            min = c_max_min(j,2);
            q = (p-min)/(max-min)
-             for(h=0;h<1000;h++)
+             for h=1:1000
                  q=4*q(1-q)
              end
             p = min+(max-min)*q;
-            real_yuzhi(ind(i),j) = p;
+            real_yuzhi(order_num(i),j) = p;
        end
    end
    for j=1:popsize
