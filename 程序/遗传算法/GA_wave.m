@@ -36,8 +36,8 @@ every_thr_len = wave_decode(c_max_min);%求出每层阈值编码的个数
 n = sum(every_thr_len);%每条染色体的总长度
 
 %  fitfun=@(x)1/((sum(s-x)/N).^2);%噪声的平均值趋于0
-   fitfun=@(x)1/(sqrt((1/N)*(sum(sum((s-xi).^2))))); %适应度函数 即：MSE的倒数
-%  fitfun=@(x)10*log((sum((x).^2))/(sum((xi-x).^2)))     ; %适应度函数 即：MSE的倒数
+%    fitfun=@(x)1/(sqrt((1/N)*(sum(sum((s-xi).^2))))); %适应度函数 即：MSE的倒数
+ fitfun=@(x)10*log((sum((x).^2))/(sum((xi-x).^2)))     ; %适应度函数 即：MSE的倒数
 % 初始化种群
 pop=round(rand(popsize,n));
 popfit=zeros(popsize,1);
@@ -62,6 +62,8 @@ end
 %找最好的染色体
 
 [bestfit,index]=max(popfit);
+plot_best = [];
+plot_best = [plot_best,bestfit]%   取出每代的适应值
 bestchrom=pop(index,:);
 % 进化开始
 for i=1:maxgen
@@ -83,19 +85,57 @@ for i=1:maxgen
         %记录新重构的信号
         xx(j,:) = new_x;
     end
+    
+%   ave_popfit=mean(popfit);
+% max_popfit=max(popfit);
+if(abs(ave_popfit-max_popfit)<1)
+    abs(ave_popfit-max_popfit);
+else
+   [s ind]=sort(popfit);
+   chaos_num = floor(0.9*popsize);
+   for(i=0;i<chaos_num;i++)
+       for(j=0;j<level_num;j++)
+           p=real_yuzhi(ind(i),j);
+           max = c_max_min(j,1);
+           min = c_max_min(j,2);
+           q = (p-min)/(max-min)
+             for(h=0;h<1000;h++)
+                 q=4*q(1-q)
+             end
+            p = min+(max-min)*q;
+            real_yuzhi(ind(i),j) = p;
+       end
+   end
+   for j=1:popsize
+            thr1=real_yuzhi(j,:);%拿出每一组实际阈值
+            %拿实际阈值中的每一组实际的阈值软处理高频部分的系数
+            [new_C]=new_func_2(C,pos_L1,pos_L2,thr1);
+            %重构信号
+            new_x = waverec(new_C,L,db);
+            %将重构好的信号代入适应度函数求适应度
+            popfit(j) = fitfun(new_x);
+
+            %记录新重构的信号
+            xx(j,:) = new_x;
+   end
+end
+            
+end
     p=bestfit;
-    1/p
     q=max(popfit);
     if q>p
         [bestfit,index]=max(popfit);
         bestchrom=pop(index,:);
     end
+  plot_best = [plot_best,bestfit]%   取出每代的适应值
 end
 best_thr = wave_encode(c_max_min,every_thr_len,bestchrom);
-best_fit = 1/bestfit
+ best_fit = bestfit;
 % 窗口显示结果
 new_sig = xx(index,:);
+figure(2);
+plot(plot_best,'red');set(gca,'xtick',[0:1:maxgen]);
 disp(['最佳染色体：',num2str(bestchrom)])
 disp(['最佳阈值是：',num2str(best_thr)])
-disp(['最佳MSE的值是：',num2str(1/bestfit)])
+disp(['最佳MSE的值是：',num2str(bestfit)])
 disp(['重构后的信号：',num2str(xx(index,:))])

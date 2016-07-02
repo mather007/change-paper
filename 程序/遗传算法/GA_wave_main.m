@@ -1,7 +1,7 @@
 close all;
 clear;
 clc;
- [x,FS,NBITS]=wavread('die2love.wav');%读取波形文件获得数据
+ [x,FS,NBITS]=wavread('hello_6.wav');%读取波形文件获得数据
 %  length_x1=size(x(:,1))
 %  length_x2=size(x(:,2))
 %  s=awgn(x,50);%添加50db的高斯白噪声
@@ -18,7 +18,7 @@ x=x(:,1);
 %    save('s_hello6_0324_snr25.mat','s');
 %  load('s_hello6_0412_snr15.mat') ;
 %  s=s;
-  wavwrite(s,FS,'hello_add_noise_s_15.wav');
+  wavwrite(s,FS,'D:\workspace\result\hello_add_noise_s_15.wav');
 %   noise=0.1.*rand(1,l_x);
 %   s=x+noise';
 %   save('s_add_rand_noise0.1.mat','s');
@@ -33,8 +33,8 @@ k=3;
 db='db4';
 level_num = k;
 
-maxgen=5; %进化代数
-popsize=3; %种群规模
+maxgen=100; %进化代数
+popsize=5; %种群规模
 pcross=0.6; %交叉概率
 pmutation=0.05; %变异概率
 
@@ -42,8 +42,8 @@ for i = 1:1
     [best_thr,best_fit,new_sig]=GA_wave(s,x,level_num,db,maxgen,popsize,pcross,pmutation);
     save(['data_wave_i=',num2str(i),'.mat'],'best_thr','best_fit','new_sig')
 end
- wavwrite(new_sig,FS,'hello6_new_0622_test3.wav');
-save('hello6_denoise_new_0622_test3.mat','new_sig');
+ wavwrite(new_sig,FS,'D:\workspace\result\hello6_new_0629_test1.wav');
+save('D:\workspace\result\hello6_denoise_new_0629_test1.mat','new_sig');
 %   save('lesson_x_add.mat','x');
 %    save('lesson_s_add.mat','s');
 figure(1);
